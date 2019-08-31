@@ -32,7 +32,6 @@ class Lemming {
 	}
 
 	async createPage(title, content){
-		console.log("page 'created'", title, content)
 		const [ tx, txId ] = this.client.createTransaction(
 			this.publicKey, this.privateKey, this.contractName,
 			"createPage",
@@ -49,7 +48,6 @@ class Lemming {
 	}
 
 	async getPage(title) {
-		console.log(`Should return page '${title}'`)
 
 		const query = this.client.createQuery(
 			this.publicKey,
@@ -66,6 +64,22 @@ class Lemming {
 		}
 
 		return receipt.outputArguments[0].value;
+
+	}
+
+	async createRevision(title, content) {
+		const [ tx, txId ] = this.client.createTransaction(
+			this.publicKey, this.privateKey, this.contractName,
+			"createRevision",
+			[
+				argString(title), argString(content)
+			]
+		);
+
+		const receipt = await this.client.sendTransaction(tx);
+		if (receipt.executionResult !== 'SUCCESS') {
+			throw getErrorFromReceipt(receipt);
+		}
 
 	}
 

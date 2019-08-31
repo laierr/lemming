@@ -31,4 +31,45 @@ describe("Lemming", () => {
 		const text = await lemming.getPage("Iggy Pop");
 		expect(text).to.be.eql("Iggy Pop is amazing");
 	});
+
+	it("can't create a page if it already exists", async () => {
+		const contractOwner = createAccount();
+		const contractName = "Lemming" + new Date().getTime();
+
+		await deploy(getClient(), contractOwner, contractName);
+		const lemming = new Lemming(getClient(), contractName, contractOwner.publicKey, contractOwner.privateKey);
+
+		await lemming.createPage("Iggy Pop", "Iggy Pop is amazing");
+
+		let err;
+		try {
+			await lemming.createPage("Iggy Pop", "Iggy Pop wrote The Passenger");
+		} catch (e) {
+			err = e.toString();
+		}
+
+		expect(err).to.be.eql("Error: page already exists!");
+	});
+
+	it("can create new revision", async () => {
+		const contractOwner = createAccount();
+		const contractName = "Lemming" + new Date().getTime();
+
+		await deploy(getClient(), contractOwner, contractName);
+		const lemming = new Lemming(getClient(), contractName, contractOwner.publicKey, contractOwner.privateKey);
+
+		let err;
+		try {
+			await lemming.createRevision("Iggy Pop", "Iggy Pop wrote The Passenger");
+		} catch (e) {
+			err = e.toString();
+		}
+		expect(err).to.be.eql("Error: page does not exists!");
+
+		await lemming.createPage("Iggy Pop", "Iggy Pop is amazing");
+		await lemming.createRevision("Iggy Pop", "Iggy Pop wrote The Passenger");
+
+		const text = await lemming.getPage("Iggy Pop");
+		expect(text).to.be.eql("Iggy Pop wrote The Passenger");
+	});
 });
