@@ -31,6 +31,22 @@ class Lemming {
 		return receipt.outputArguments[0].value;
 	}
 
+	async value() {
+		const query = this.client.createQuery(
+			this.publicKey,
+			this.contractName,
+			"value",
+			[]
+		);
+
+		const receipt = await this.client.sendQuery(query);
+		if (receipt.executionResult !== 'SUCCESS') {
+			throw getErrorFromReceipt(receipt);
+		}
+
+		return receipt.outputArguments[0].value;
+	}
+
 	async createPage(title, content){
 		const [ tx, txId ] = this.client.createTransaction(
 			this.publicKey, this.privateKey, this.contractName,
@@ -83,12 +99,15 @@ class Lemming {
 
 	}
 
-	async value() {
+	async getPageRevisionCount(title) {
+
 		const query = this.client.createQuery(
 			this.publicKey,
 			this.contractName,
-			"value",
-			[]
+			"getPageRevisionCount",
+			[
+				argString(title)
+			]
 		);
 
 		const receipt = await this.client.sendQuery(query);
@@ -98,6 +117,8 @@ class Lemming {
 
 		return receipt.outputArguments[0].value;
 	}
+
+	
 }
 
 module.exports = {

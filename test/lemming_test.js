@@ -64,12 +64,23 @@ describe("Lemming", () => {
 		} catch (e) {
 			err = e.toString();
 		}
-		expect(err).to.be.eql("Error: page does not exists!");
+		expect(err).to.be.eql("Error: page does not exist!");
 
 		await lemming.createPage("Iggy Pop", "Iggy Pop is amazing");
 		await lemming.createRevision("Iggy Pop", "Iggy Pop wrote The Passenger");
 
 		const text = await lemming.getPage("Iggy Pop");
 		expect(text).to.be.eql("Iggy Pop wrote The Passenger");
+
+		let revisionErr;
+		try {
+			await lemming.getPageRevisionCount("David Bowie");
+		} catch (e) {
+			revisionErr = e.toString()
+		}
+		expect(revisionErr).to.be.eql("Error: page does not exist!");
+
+		const numRevisions = await lemming.getPageRevisionCount("Iggy Pop");
+		expect(numRevisions).to.be.eql(2);
 	});
 });
