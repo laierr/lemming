@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "gamma:start": "gamma-cli start-local -wait",
+    "gamma:start": "gamma-cli start-local -wait -env experimental",
     "gamma:stop": "gamma-cli stop-local",
     "lemming:local": "node ./src/deploy.js",
     "test": "mocha test --timeout 20000 --exit"
